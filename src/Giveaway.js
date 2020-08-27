@@ -26,6 +26,8 @@ class Giveaway {
         this.hasEnded = 'False';
 
         this.duration = options.duration;
+        
+        this.timeRemaining = options.timeRemaining;
 
         const newGiveaway = new GiveawayModel({
             prize: this.prize,
@@ -37,7 +39,8 @@ class Giveaway {
             startsOn: this.startsOn,
             winners: this.winners,
             hasEnded: this.hasEnded,
-            duration: this.duration
+            duration: this.duration,
+            timeRemaining: this.timeRemaining
         });
 
         newGiveaway.save();
