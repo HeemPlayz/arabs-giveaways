@@ -34,6 +34,30 @@ class GiveawayCreator {
             await schedule(this.client, giveaways);
         });
     }
+    
+    let remainingTime = this.endAt - Date.now()
+    
+    async function content() {
+ let roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
+        // Gets days, hours, minutes and seconds
+        let days = roundTowardsZero(remainingTime / 86400000),
+            hours = roundTowardsZero(remainingTime / 3600000) % 24,
+            minutes = roundTowardsZero(remainingTime / 60000) % 60,
+            seconds = roundTowardsZero(remainingTime / 1000) % 60;
+        // Increment seconds if equal to zero
+        if (seconds === 0) seconds++;
+        // Whether values are inferior to zero
+        let isDay = days > 0,
+            isHour = hours > 0,
+            isMinute = minutes > 0;
+         let content = this.timeRemaining
+            .replace('{duration}', pattern)
+            .replace('{days}', days.toString())
+            .replace('{hours}', hours.toString())
+            .replace('{minutes}', minutes.toString())
+            .replace('{seconds}', seconds.toString());
+        return content;
+}
 
     /**
      * 
@@ -53,10 +77,12 @@ class GiveawayCreator {
         
         const giveawayEmbed = new Discord.MessageEmbed()
         .setAuthor(options.prize)
-        .setColor(guild.me.roles.highest.hexColor)
-        .setDescription(`🎖️ Winners: ${options.winners}
-        🥳 Hosted By: ${this.client.users.cache.get(options.hostedBy).toString()}`)
-        .setFooter(`Ends ${moment.utc(new Date(Date.now() + options.duration)).format('lll')}`);
+        .setColor("#FF0000")
+        .setDescription(`React with 🎉 to participate!
+Time Left: ${content()}
+        Hosted By: ${this.client.users.cache.get(options.hostedBy).toString()}`)
+        .setFooter(`${options.winners} winner(s)`);
+        .setTimestamp(new Date(Date.now() + options.duration).toISOString());
 
         const msg = await channel.send(giveawayEmbed);
 
@@ -74,7 +100,7 @@ class GiveawayCreator {
             hostedBy: options.hostedBy
         });
 
-        msg.channel.send('Created the giveaway. 🎉');
+       
         await schedule(this.client, [newGiveaway]);
 
         return newGiveaway;
